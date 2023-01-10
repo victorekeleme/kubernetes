@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: DeploymentName
+  namespace: deploymentNamespace
+  labels:
+    app: app-name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-name
+  template:
+    metadata:
+      labels:
+        app: app-name
+    spec:
+      containers:
+      - name: containerName
+        image: imageName
+        ports:
+        - containerPort: portNumber
+        volumeMounts:
+        - name: es-persistent-storage
+          mountPath: /var/lib/data
+        - name: es-secret-dir
+          mountPath: /var/lib/secret
+          readOnly: true
+        - name: es-config-dir
+          mountPath: /var/lib/config
+      volumes:
+      - name: es-persistent-storage
+        persistentVolumeClaim:
+          claimName: es-pv-claim
+      - name: es-secret-dir
+        secret:
+          secretName: es-secret
+      - name: es-secret-dir
+        configMap:
+          name: es-config-map
+

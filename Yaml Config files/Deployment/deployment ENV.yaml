@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: DeploymentName
+  namespace: deploymentNamespace
+  labels:
+    app: app-name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-name
+  template:
+    metadata:
+      labels:
+        app: app-name
+    spec:
+      containers:
+      - name: containerName
+        image: imageName
+        ports:
+        - containerPort: portNumber
+        env:
+        - name: ENVIRONMENT_VARIABLE1
+          valueFrom:
+            secretKeyRef:
+              name: secretName
+              key: username
+        - name: ENVIRONMENT_VARIABLE2
+            valueFrom:
+              secretKeyRef:
+                name: secretName
+                key: password
+        - name: ENVIRONMENT_VARIABLE3
+            valueFrom:
+              configMapKeyRef:
+                name: configMapName
+                key: db_url
+

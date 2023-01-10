@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: DeploymentName
+  namespace: deploymentNamespace
+  labels:
+    app: app-name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-name
+  template:
+    metadata:
+      labels:
+        app: app-name
+    spec:
+      imagePullSecrets:
+      - name: registry-secret-keyName
+      containers:
+      - name: containerName
+        image: repositoyAddress/imageName:tag
+        imagePullPolicy: Always
+        ports:
+        - containerPort: portNumber
+
+
