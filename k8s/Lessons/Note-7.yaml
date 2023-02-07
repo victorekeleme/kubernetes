@@ -27,6 +27,8 @@ Note ->
 Taint ->
 Enable us to exclude one/more nodes from Pod Scheduling
 
+command-> kubectl taint node master node-role.kubernetes.io/master:NoSchedule-
+
 Toleration ->
 Enables us schedule a pod on any node
 Eg:
