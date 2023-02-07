@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: <rsName>
+  namespace: <nsName>
+spec:
+  replicas: #<noOfPodReplicas>
+  selector:
+    matchLabels:
+       app: <appName>
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - "<appName>"
+  template:
+    metadata:
+      name: <podName>
+    spec:
+      selector:
+        matchLabels:
+          app: <appName>
+      containers:
+        - name: <appName>
+          image: <ImageName>
+          ports:
+            - containerPort: #<containerPort>

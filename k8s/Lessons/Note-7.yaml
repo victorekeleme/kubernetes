@@ -1,0 +1,40 @@
+ReplicaSet (RS)
+==============
+
+ReplicaSet is next generation(Advance version) of Replication Controller.
+ReplicaSet also manages the pod lifecycle.
+It will create and manage pods and we can sclae in or scale out the pod replicas
+
+Note-> Only difference btw ReplicaController and ReplicaSet is in Selector Support
+-> RC Supports only Equality Based Selector
+  -> key: value
+  -> key == value
+-> RS Supports both Equality and Set(Expression) Based Selector.
+  -> key in ('value1',value2)
+  -> key not in ('value1, 'value2')
+-> Selectors are not mandatory in RC & In Rs Selectors are mandatory
+
+
+DaemonSet (DS)
+==============
+A DaemonSet make sure that all or some kubernetes Nodes run a copy of a pods.
+When a new node is added to the cluster, a Pod is added to it to match the rest of the nodes and then a node is removed from the cluster, the Pod is garbage collected
+
+Note ->
+-> Deleting a DaemonSet will clean up the Pods it created
+-> DaemonSet does not allow replicas field (it runs on every available nodes)
+
+Taint ->
+Enable us to exclude one/more nodes from Pod Scheduling
+
+Toleration ->
+Enables us schedule a pod on any node
+Eg:
+    tolerations:
+    - operator: Exists
+      effect: NoSchedule/ NoExecute / PreferNoSchedule
+
+Deployment
+============
+This is the recommended way 
+

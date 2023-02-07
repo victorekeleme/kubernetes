@@ -1,0 +1,18 @@
+# Place file in the /etc/kubernetes/manifest/
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginxpod
+  labels:
+    name: nginxpod
+spec:
+  containers:
+  - name: nginxpod
+    image: nginx
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: 80

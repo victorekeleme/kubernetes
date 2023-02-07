@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: <rcName>
+  namespace: <nsName>
+spec:
+  selector:
+    matchLabels:
+      <key>: <value>
+  template:
+    metadata:
+      name: <podName>
+      labels:
+        <key>: <value>
+    spec:
+      tolerations:
+        - operator: Exists
+          effect: No
+      containers:
+        - name: <containerName>
+          image: <ImageName>
+          ports:
+            - containerPort: <containerPort>
