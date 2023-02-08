@@ -1,0 +1,40 @@
+Deployment
+============
+This is the recommended way to deploy Pod or RS, simply because of the advance features it comes with
+such as:
+-> Deploy RS
+-> Updates pods (PodTemplateSpec)
+-> Rollback to older Deployment
+-> Scale Deployment up or down
+-> Pause and resume the Deployment
+-> Use the Status of the Deployment to determine state of replicas
+
+Imperative commands
+====================
+-> kubectl get deployment
+-> kubectl scale deployment <deploymentName> --replicas <noOfPodReplicas>
+-> kubectl rollout status deployment <deploymentName>
+-> kubectl set image deployment <deploymentName> <containerName>=image:tag
+-> kubectl rollout history deployment <deploymentName>
+-> kubectl rollout history deployment <deploymentName> -revision=1 # Select the revision
+-> kubectl rollout undo deployment <deploymentName> --to-revision=1 #
+
+Deployment Strategies
+=======================
+-> Rolling/ Rolling update deployment
+    -> The rolling deployment is the standard default deployment to kubernetes.
+    -> it works by slowly, one by one, replacing pods of the previous version of your application with pods of the new version without any cluster downtime
+  Example:
+    spec:
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1 # Specifies the maximum no (or percentage) of pods above the specified number of replicas
+          maxUnavailable: 1 # Specifies the number (or percentage) of pods permitted to be unavailable during rolling update
+      minReadySeconds: 30 # Minimum time allowed btw each pods creation(new version) and termination(old version) during an update (helps the pods to initialize properly)
+
+-> Recreate
+    -> In recreate strategy, all the old pods are killed all at one and get replaced all at once witrh the new ones
+    spec:
+      strategy:
+        type: Recreate

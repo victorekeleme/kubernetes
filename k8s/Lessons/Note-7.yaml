@@ -36,7 +36,5 @@ Eg:
     - operator: Exists
       effect: NoSchedule/ NoExecute / PreferNoSchedule
 
-Deployment
-============
-This is the recommended way 
+
 

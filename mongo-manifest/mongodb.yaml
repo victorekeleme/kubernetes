@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: dev
+  labels:
+    app: mongodb
+spec:
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 5
+  replicas: 1
+  selector:
+    app: mongodb
+  template:
+    metadata:
+      name: mongodb
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo
+          ports:
+          - containerPort: 27017
+          env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: USERNAME
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: PASSWORD
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-svc
+  namespace: dev
+spec:
+  selector:
+    app: mongodb
+  type: ClusterIP
+  ports:
+  - targetPort: 27017
+    port: 27017
+    protocol: TCP

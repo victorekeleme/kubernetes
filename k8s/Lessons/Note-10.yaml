@@ -1,0 +1,14 @@
+HPA and Metric server
+=======================
+HPA --> Horizontal Pod Autoscaler
+  --> HPA will interact with the metrics server to identify CPU and Memory Utilization of POD by gathering information from kubelet running on the node
+  --> HPA evaluates/observes the metrics on the metrics server in other scale in or out PODs in the cluster
+  eg. minReplicas, maxReplicas
+
+What is heapSerter in K8s?
+
+What is difference btw heapSerter and metricsServer?
+Metric Server collects resource metrics from kubelets and exposes them in K8s apiserver through Metircs API for use by HPA and VPA.
+it can also be accessed by kubectl top, making it easier to debug autoscaling Pipelines
+
+HeapSter enables Container Cluster Monitoring and Performance Analysis for Kubernetes
