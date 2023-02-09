@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hpadeployment
+  labels:
+    app: hpadeploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hpapod
+  template:
+    metadata:
+      labels:
+        app: hpapod
+    spec:
+      containers:
+        - name: hpacontainer
+          image: k8s.gcr.io/hpa-example
+          ports:
+            - name: http
+              containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "150Mi"
+            limits:
+              cpu: "220m"
+              memory: "260Mi"

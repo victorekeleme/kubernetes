@@ -23,6 +23,18 @@ Capacity = Node - Sum all existing resources requests
 If the process is running out of cpu --> Process(Application) Slow(Hung)
 If the process running out of memory --> OOM killed (Out of memory)
 
+Resource Configuration Values
+Memory: is measured in bytes and expressed as an integer or using a fixed point integer
+e.g:
+  memory: 1 = 1 byte, 1Mi = 1 mebibyte/megabyte, 1Gi = 1 gigibyte/gigabyte
+Note: If you put in a memory request that is larger than the amount of memory on your nodes, the pod will never be scheduled.
+
+CPU: is measure in millicpus, which is 1/1000th of a CPU core and expressed with integers.
+  e.g:
+    cpu: 1 = 1 CPU, 2000m = 2 CPUs, 0.75 = 0.75 = 750m.
+
+Note: One thing to keep in mind about CPU requests is that if you put in a value larger than the core count of your biggest node, your pod will never be scheduled
+
 Scaling
 ============
 HPA --> Horizontal Pod Autoscaler

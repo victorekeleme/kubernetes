@@ -33,7 +33,8 @@ Pending ->
   -> To troubleshoot we use = kubectl describe pod <podName>
 
 CrashLoopBackOff ->
-  -> Container process is not successfully started due to some issue in the code/image 
+  -> Container process is not successfully started due to some issue in the code/image
+  -> OOM Error (Out of memory)
   -> To troubleshoot
     -> kubectl describe pod <podName>
     -> kubectl logs <podName> -c <containerName>

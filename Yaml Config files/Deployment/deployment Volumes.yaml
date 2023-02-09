@@ -28,6 +28,8 @@ spec:
           readOnly: true
         - name: es-config-dir
           mountPath: /var/lib/config
+        - name: mongodb_volume
+          mountPath: /data/db
       volumes:
       - name: es-persistent-storage
         persistentVolumeClaim:
@@ -38,4 +40,7 @@ spec:
       - name: es-secret-dir
         configMap:
           name: es-config-map
+      - name: mongodb_volume
+        hostPath:
+          path: /mongoData
 

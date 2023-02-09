@@ -42,6 +42,13 @@ spec:
               configMapKeyRef:
                 name: mongo-ui-config
                 key: DATABASE_URL
+          resources:
+            requests:
+              cpu: 200m
+              memory: 250Mi
+            limits:
+              cpu: 250m
+              memory: 300Mi
 
 ---
 apiVersion: v1

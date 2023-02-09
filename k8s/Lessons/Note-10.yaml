@@ -8,7 +8,18 @@ HPA --> Horizontal Pod Autoscaler
 What is heapSerter in K8s?
 
 What is difference btw heapSerter and metricsServer?
-Metric Server collects resource metrics from kubelets and exposes them in K8s apiserver through Metircs API for use by HPA and VPA.
-it can also be accessed by kubectl top, making it easier to debug autoscaling Pipelines
+-> Metric Server collects resource metrics from kubelets and exposes them in K8s apiserver through Metircs API for use by HPA and VPA. it can also be accessed by kubectl top, making it easier to debug autoscaling Pipelines
 
-HeapSter enables Container Cluster Monitoring and Performance Analysis for Kubernetes
+HeapSter enables Container Cluster Monitoring and Performance Analysis for Kubernetes.
+
+Metrics-server
+==============
+Link: https://github.com/kubernetes-sigs/metrics-server
+Usage
+-> $ kubectl top nodes # Display node metrics
+-> $ kubectl top pods # Display pod metrics
+
+HPA
+========
+Usage
+-> $ kubectl get hpa
