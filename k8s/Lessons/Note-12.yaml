@@ -1,0 +1,42 @@
+Persistent Volume Claim (Namespaced=true)
+=========================================
+Simply ->
+-> It's a request for storage(volume).
+-> with PVC we can request(Specify) how much storage we need and with what access mode
+
+Pods that need access to persistent storage, obtain that access through the use of a Persistent Volume Claim.
+A PVC, binds a persistent volume to a pod that requested it. 
+When a pod wants access to a persistent disk, it will request access to the claim which will specify the size , access mode and/or storage classes that it will need from a Persistent Volume.
+Indirectly the pods get access to the PV, but only through the use of a PVC.
+
+Note->
+-> Persistent volume(PV) needs to be available for Persistent Volume Claim(PVC)
+-> Relationship btw PVC ===> PV is one to one relationship
+-> if PVC has claimed a PV another PVC can't claim the PV
+
+
+accessModes
+==============
+- ReadWriteOnce 
+- ReadWriteMany
+- ReadOnlyOnce
+- ReadWritePodOnlyOnce
+
+
+
+Persistent Volume (Namespace=False)
+===================================
+Persistent Volumes are simply a piece of storage in your cluster. Similar to how you have a disk resource in a server, a persistent volume provides storage resources for objects in the cluster.
+
+Static Volumes
+-> A static PV simply means the volumes provisioned by a k8s administrator manually in the cluster and it’s ready to be consumed by other resources.
+
+Dynamically Volumes
+-> Provisioning (creating) volumes dynamically using StorageClass
+
+StorageClass (Namespace=false)
+-> Provisions persistent volumes (PV) dynamically for a specified persistent volume claim (PVC) in the cluster.
+
+
+Note->
+PVC and PV get associated by aaccessModes and storage capacity. meaning they must match for PVC to claim a PV 

@@ -11,7 +11,8 @@ spec:
   revisionHistoryLimit: 5
   replicas: 1
   selector:
-    app: mongodb
+    matchLabels:
+      app: mongodb
   template:
     metadata:
       name: mongodb
@@ -34,6 +35,25 @@ spec:
               secretKeyRef:
                 name: mongodb-secret
                 key: PASSWORD
+          volumeMounts:
+            - name: mongodb-volume
+              mountPath: /data/db
+      volumes:
+        - name: mongodb-volume
+          persistentVolumeClaim:
+            claimName: mongodb-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+  namespace: dev
+spec:
+  resources:
+    requests:
+      storage: 1Gi
+  accessModes:
+  - ReadWriteOnce
 
 ---
 
