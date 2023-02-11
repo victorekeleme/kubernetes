@@ -15,15 +15,6 @@ Note->
 -> if PVC has claimed a PV another PVC can't claim the PV
 
 
-accessModes
-==============
-- ReadWriteOnce 
-- ReadWriteMany
-- ReadOnlyOnce
-- ReadWritePodOnlyOnce
-
-
-
 Persistent Volume (Namespace=False)
 ===================================
 Persistent Volumes are simply a piece of storage in your cluster. Similar to how you have a disk resource in a server, a persistent volume provides storage resources for objects in the cluster.
@@ -37,6 +28,24 @@ Dynamically Volumes
 StorageClass (Namespace=false)
 -> Provisions persistent volumes (PV) dynamically for a specified persistent volume claim (PVC) in the cluster.
 
-
 Note->
-PVC and PV get associated by aaccessModes and storage capacity. meaning they must match for PVC to claim a PV 
+PVC and PV get associated by aaccessModes and storage capacity. meaning they must match for PVC to claim a PVC.
+
+
+accessModes
+==============
+- ReadWriteOnce (RWO)-> (AWS EBS, Azure Disk, Azure File, NFS)
+    -> The volume can be mounted as read-write by a single node.
+    -> This access mode still can allow multiple pods to access the volume when the pods are running on the same node
+- ReadWriteMany (RWX) -> (NFS, Azure File)
+    -> The volume can be mounted as read-write by many nodes
+- ReadOnlyMany (ROX) -> (NFS, Azure File)
+    -> The volume can be mounted as read-only by many nodes
+- ReadWriteOncePod (RWOP) ->
+    -> The volume can be mounted as read-write by many pods
+
+ReclaimPocily (Manages how data would be treated when PVC is deleted)
+============== 
+Retain -> If we delete PVC the associated PV stored will be retained.
+Recycle -> If we delete PVC the associated PV also gets recycled (deletes the data and makes itself available for another PVC).
+Delete -> If we delete PVC the associated PV also gets deleted.
