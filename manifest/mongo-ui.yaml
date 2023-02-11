@@ -13,7 +13,8 @@ spec:
       maxUnavailable: 1
   minReadySeconds: 30
   selector:
-    app: mongo-express
+    matchLabels:
+      app: mongo-express
   replicas: 1
   template:
     metadata:
@@ -49,7 +50,6 @@ spec:
             limits:
               cpu: 250m
               memory: 300Mi
-
 ---
 apiVersion: v1
 kind: Service

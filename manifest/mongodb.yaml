@@ -41,20 +41,33 @@ spec:
       volumes:
         - name: mongodb-volume
           persistentVolumeClaim:
-            claimName: mongodb-pvc
+            claimName: mongo-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongodb-pvc
+  name: mongo-pvc
   namespace: dev
 spec:
   resources:
     requests:
-      storage: 1Gi
+      storage: 2Gi
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteMany
 
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-pv
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+  - ReadWriteMany
+  nfs:
+    server: 10.100.0.136
+    path: / 
 ---
 
 apiVersion: v1
