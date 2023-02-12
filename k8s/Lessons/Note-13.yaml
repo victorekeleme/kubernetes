@@ -1,0 +1,18 @@
+ConfigMap & Secrets
+=================== 
+Kubernetes allows you to provide configuration information to our applications through ConfigMaps or secret resources.
+The main differentiator between the two is the way a pod stores the receiving information and how the data is stored in the etcd data store.
+ConfigMaps and Secrets store data as a key value pair.
+The major difference is, Secrets store data in base64 format meanwhile ConfigMaps store data in a plain
+text
+
+Note -> 
+-> If you have some critical data like, keys, passwords, service accounts credentials, db connection string, etc then you should always go for Secrets rather than Configs.
+-> if you want to do some application configuration using environment variables which you don't want to keep secret/hidden like, app base platform url, etc then you can go for ConfigMaps.
+
+Imperative commands
+ConfigMap
+-> kubectl create configmap <nameOfConfig> --from-literal=<variable>=<value> --from-literal=<variable>=<value>
+
+Secret
+-> kubectl create secret <nameOfSecret> --from-literal=<variable>=<value> --from-literal=<variable>=<value>

@@ -49,3 +49,4 @@ ReclaimPocily (Manages what happens to data when PVC is deleted)
 Retain -> If we delete PVC the associated PV stored will be retained.
 Recycle -> If we delete PVC the associated PV also gets recycled (deletes the data and makes itself available for another PVC).
 Delete -> If we delete PVC the associated PV also gets deleted.
+

@@ -27,7 +27,8 @@ spec:
           mountPath: /var/lib/secret
           readOnly: true
         - name: es-config-dir
-          mountPath: /var/lib/config
+          mountPath: "/var/lib/config/tomcat-users.xml"
+          subPath: "tomcat-users.xml"
         - name: mongodb_volume
           mountPath: /data/db
       volumes:
@@ -40,6 +41,9 @@ spec:
       - name: es-secret-dir
         configMap:
           name: es-config-map
+          items:
+          - key: "tomcat-users.xml"
+            path: "tomcat-users.xml"
       - name: mongodb_volume
         hostPath:
           path: /mongoData

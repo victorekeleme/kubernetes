@@ -61,6 +61,7 @@ kind: PersistentVolume
 metadata:
   name: mongo-pv
 spec:
+  pesistentVolumeReclaimPolicy: Retain # Delete, Recycle 
   capacity:
     storage: 2Gi
   accessModes:
