@@ -14,8 +14,3 @@ When a Pod is removed from a node for any reason, the data in the emptyDir is de
 Use Cases
 Holding files that a content-manager container fetches while a webserver container servers the data
 
-
-
-StatefulSet
-==============
-This is designed for deploying and managing stateful Applications

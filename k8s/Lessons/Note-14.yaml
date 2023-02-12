@@ -1,0 +1,66 @@
+Liveness Probe & Readiness Probe
+=================================
+Liveness and Readiness probes are used to control the health of an application running inside a Pod’s container.
+
+Liveness Probe ->
+Liveness probe checks the container health as we tell it do, and if for some reason the liveness probe fails, it restarts the container.
+Example ->
+-> Suppose that a Pod is running our application inside a container, but due to some reason let’s say memory leak, cpu usage, application deadlock etc the application is not responding to our requests, and stuck in error state.
+
+Readiness Probe -> 
+-> This type of probe is used to detect if a container is ready to accept traffic. You can use this probe to manage which pods are used as backends for load balancing services. If a pod is not ready, it can then be removed from the list of load balancers.
+
+
+livenessProbe:
+  exec:
+    commad:
+    - cat
+    - /tmp/healthy
+  initialDelaySeconds: 30 # time delay to before liveness checks is conducted
+  PeriodSeconds: 5 # periodic health check interval
+
+readynessProbe:
+  exec:
+    commad:
+    - cat
+    - /tmp/healthy
+  initialDelaySeconds: 30 # time delay to before readyness checks is conducted
+  PeriodSeconds: 5 # periodic health check interval
+
+HTTP Get call(HTTP health check)
+
+livenessProbe:
+  httpGet:
+    path: /contextPath
+    port: port
+    httpHeaders:
+    - name: Custom-Header
+      value: Awesome
+  initialDelaySeconds: 5
+  timeoutSeconds: 5 # time taken to consider application is in error state, and restarts the container from the image
+  PeriodSeconds: 5
+
+readynessProbe:
+  httpGet:
+    path: /contextPath
+    port: port
+    httpHeaders:
+    - name: Custom-Header
+      value: Awesome
+  initialDelaySeconds: 5
+  timeoutSeconds: 5
+  PeriodSeconds: 5
+
+Transport Level Checks
+
+livenessProbe:
+  tcpSocket:
+    port: 8080
+  initialDelaySeconds: 5
+  PeriodSeconds: 10
+
+readynessProbe:
+  tcpSocket:
+    port: 8080
+  initialDelaySeconds: 5
+  PeriodSeconds: 10
