@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongod
+  namespace: backend
+  labels:
+    app: mongodb
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mongodb
+  serviceName: mongodb-service
+  template:
+    metadata:
+      name: mongodb-pod
+      labels:
+        app: mongodb
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongodb-container
+          image: mongo
+          command:
+            - "mongod"
+            - "--bind_ip"
+            - "0.0.0.0"
+            - "--replSet"
+            - "MainRepSet"
+          ports:
+            - containerPort: 27017
+          env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: mongodb-config
+                key: USERNAME
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: PASSWORD
+          resources:
+            requests:
+              cpu: 400m
+              memory: 550Mi
+          volumeMounts:
+          - name: mongodb-pvc
+            mountPath: /data/db
+
+  volumeClaimTemplates:
+  - metadata:
+      name: mongodb-pvc
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+  namespace: backend
+spec:
+  selector:
+    app: mongodb
+  clusterIP: None # Headless Service
+  ports:
+  - port: 27017
+    targetPort: 27017
+    protocol: TCP

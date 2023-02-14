@@ -1,5 +1,70 @@
 StatefulSet
 ==============
-This is designed for deploying and managing stateful Applications
+This is designed for deploying and managing stateful Applications (Databases)
 
- 
+Issue with using Deployments for Stateful applications?
+Deployments are usually used for stateless applications.
+However, you can save the state of deployment by attaching a Persistent Volume to it and make it stateful,
+but all the pods of a deployment will be sharing the same Volume and data across all of them will be same.
+e.g Three(3) pods would make use of one PVC to claim a PV
+
+-> StatefulSet is a Kubernetes resource used to manage stateful applications.
+It manages the deployment and scaling of a set of Pods, and provides
+guarantee about the ordering and uniqueness of these Pods.
+
+StatefulSet is also a Controller but unlike Deployments, it doesn’t create ReplicaSet rather itself creates the Pod with a unique naming convention
+e.g If you create a StatefulSet with name mongo, it will create a pod with
+name mongo-0 and for multiple replicas of a statefulset, their names will
+increment like mongo-0, mongo-1, mongo-2 etc
+
+Every replica of a statefulset will have its own state, and each of the pods
+will be creating its own PVC(Persistent Volume Claim). So a statefulset
+with 3 replicas will create 3 pods, each having its own Volume(PV), so total 3
+PVCs.
+
+
+StateFulset Deployments Provide ->
+================================== 
+Stable, Unique network identifiers
+Each pod in a StatefulSet is given a hostname that is based on the application name and increment.
+
+e.g if appName = mongo
+replicas hostName would be mongo-0, mongo-1, mongo-2 etc
+
+Stable, persistent storage ->
+Each and every pod in the cluster is given its own persistent volume based on the storage
+class defined, or the default, if none are defined.
+
+Note -> Deleting or scaling down pods will not automatically delete the volumes
+associated with them so that the data persists.
+
+Ordered, graceful deployment and scaling ->
+Pods for the StatefulSet are created and brought online in order, from 1 to n, and they are shut down in reverse
+order to ensure a reliable and repeatable deployment and runtime.
+
+Ordered, automated rolling updates ->
+StatefulSets have the ability to handle upgrades in a rolling manner where 
+it shuts down and rebuilds each node in the order it was created originally,
+continuing this until all the old versions have been shut down and cleaned up.
+
+
+Configuring mongodb for Replication
+
+Check status of repelSet ->
+mongosh -> To enter mongo shell
+rs.status()
+
+Check for hostname ->
+hostname #prints mongod-0 (appName)
+hostname -f #prints <appName>.<serviceName>.<nameSpace>.svc.cluster.local (mongod-0.mongodb-service.dev.svc.cluster.local)
+
+# Initiate mongod db reple Set and add members
+rs.initiate ( {_id: "MainRepSet", version: 1,
+members: [
+  { _id: 0, host: "mongod-0.mongodb-service.dev.svc.cluster.local:27017" },
+  { _id: 0, host: "mongod-0.mongodb-service.dev.svc.cluster.local:27017" },
+  { _id: 0, host: "mongod-0.mongodb-service.dev.svc.cluster.local:27017" }, ]})
+
+# Create root username and password
+db.getSiblingDB("admin").createUser ( {user : "admin", pwd : "password", roles: [ { role: "role", db: "admin" } ]} );
+
