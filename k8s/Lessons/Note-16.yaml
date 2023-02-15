@@ -1,0 +1,4 @@
+Scheduling
+============
+What are the basis Scheduler uses to schedule a pod on a node?
+-> The Scheduler decides based on the resources available on the nodes comparing to the resources the pods are requesting.
