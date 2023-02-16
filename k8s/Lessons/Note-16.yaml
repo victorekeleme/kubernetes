@@ -1,4 +1,158 @@
 Scheduling
 ============
 What are the basis Scheduler uses to schedule a pod on a node?
--> The Scheduler decides based on the resources available on the nodes comparing to the resources the pods are requesting.
+-> Kubernetes scheduler ensures that the right node is selectedby checking
+  the node’s capacity for CPU and RAM and comparing it to the Pod’s resource requests.
+
+-> The scheduler makes sure that, for each of these resource types, the sum of all resource
+  requests by the Pods’ containers is less than the capacity of the node.
+
+Scheduling Use Cases
+-> You want your Pod(s) to end up on a machine with the SSD attached to it
+-> You want to co-locate Pods on a particular machine(s) from the same availability zone.
+-> You want to co-locate a Pod from one Service with a Pod from another service on the same node because these Services strongly depend on each other.(ex. Webserver and Memcached)
+
+Node Selector (nodeSelector)
+=============================
+This is a simple Pod scheduling feature that allows scheduling a Pod onto a node whose
+labels match the nodeSelector labels specified by the user.
+
+Steps:
+Check existing labels:
+kubectl get nodes --show-labels
+
+Add label to selected node:
+kubectl label nodes <node-name> <label-key>=<label-value>
+
+Add nodeSelector on Pod.spec:
+
+template:
+  spec:
+    nodeSelector:
+      node: workerone
+
+Node Affinity
+====================
+Node affinity is a way to set rules based on which the scheduler can select the nodes
+for scheduling workload.
+
+The affinity greatly expands the nodeSelector functionality such as -> 
+-> Affinity language is more expressive (more logical operators to control how Pods are scheduled).
+
+-> Affinity Rules
+  -> Soft (Prefered) Rules->  PreferedDuringSchedulingIgnoredDuringExecution
+    In Preferred rule, a pod will be assigned on a non-matching node if and only if no
+    other node in the cluster matches the specified
+
+  -> Hard (Required) Rules -> 
+    In Required rules, if there are no matching nodes, then the pod won't be scheduled.
+    * RequiredDuringSchedulingIgnoredDuringExecution ->
+      In requiredDuringSchedulingIgnoredDuringExecution affinity, a pod will be
+      scheduled only if the node labels specified in the pod spec matches with the labels
+      on the node. However, once the pod is scheduled, labels are ignored meaning even if
+      the node labels change, the pod will continue to run on that node.
+    
+    * RequiredDuringSchedulingRequiredDuringExecution ->
+      In requiredDuringSchedulingRequiredDuringExecution affinity, a pod will be
+      scheduled only if the node labels specified in the pod spec matches with the labels
+      on the node and if the labels on the node change in future, the pod will be evicted.
+
+Use Case for Node Affinity
+-> While scheduling workload, when we need to schedule a certain set of pods
+   on a certain set of nodes but do not want those nodes to reject everything
+   else, using node affinity makes sense.
+
+Steps:
+Check existing labels:
+kubectl get nodes --show-labels
+
+Add label to selected node:
+kubectl label nodes <node-name> <label-key>=<label-value>
+
+Add Rules to Pod.spec:
+
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 1
+      preference:
+        matchExpressions:
+        - key: node
+          operator: In
+          values:
+          - workerone
+
+Note: To remove Label from seleted node -> 
+kubectl label nodes <node-name> <label-key>-
+
+
+
+
+
+affinity
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      matchExpressions:
+      - key: node
+        operator: In
+        values:
+        - workerone
+
+
+
+Pod Affinity/Pod Anti Affinity -> 
+Inter-pod affinity and anti-affinity allow you to constrain which nodes your pod
+is eligible to be scheduled based on labels on pods that are already running
+on the node rather than based on labels on nodes.
+
+Use cases
+-> While scheduling workload, when we need to schedule a certain set of pods
+   together, PodAffinity makes sense. Example, a web server and a cache.
+
+-> While scheduling workload, when we need to make sure that a certain set of
+   pods are not scheduled together, PodAntiAffinity makes sense.
+
+Note: Soft and hard rules can be applied to Pod Affinity/Pod Anti Affinity
+
+affinity:
+  podAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+      matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - nginx
+    topologyKey: "kubernetes.io/hostname"
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+      matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - mongodb
+    topologyKey: "kubernetes.io/hostname"
+
+
+Taints
+====================
+Taint is a property of node that allows you to repel a set of pods unless those pods explicitly
+tolerates the said taint.
+
+-> Taint has three parts. A key, a value and an effect.
+ex:
+  Taint Node => kubectl taint nodes <nodeName> <key>=<value>:<effect>
+  Untaint Node => kubectl taint nodes <nodeName> <key>=<value>:<effect>-
+
+effects
+-> NoSchedule - Doesn't schedule a pod without matching tolerations
+-> PreferNoSchedule - Prefers that the pod without matching toleration be not
+   scheduled on the node. It is a softer version of NoSchedule effect.
+-> NoExecute - Evicts the pods that don't have matching tolerations.
+
+
+

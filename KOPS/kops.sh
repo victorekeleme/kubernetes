@@ -26,18 +26,44 @@ NETWORK="weave"
 MASTER_SIZE="t2.medium"
 MASTER_COUNT=1
 WORKER_SIZE="t2.medium"
-WORKER_COUNT=1
+WORKER_COUNT=2
 BUCKET_NAME="vistein"
 PROVIDER="aws"
 
 
 
 # Create KOPS cluster
-kops create cluster --zones $REGION --networking $NETWORK --master-size $MASTER_SIZE --master-count $MASTER_COUNT --node-size $WORKER_COUNT --node-count $WORKER_COUNT --cloud $PROVIDER $NAME
+kops create cluster --zones $REGION --networking $NETWORK --master-size $MASTER_SIZE --master-count $MASTER_COUNT --node-size $WORKER_SIZE --node-count $WORKER_COUNT --cloud $PROVIDER $NAME
+
+if [ $? -eq 0 ]
+then
+        # copy the sshkey into your cluster to be able to access your kubernetes node from the kops server
+        kops create secret --name $NAME sshpublickey admin -i ~/.ssh/id_rsa.pub
+        
+        #Initialise your kops kubernetes cluser
+        kops update cluster $NAME --yes
+
+
+        #Export the kubeconfig file to manage your kubernetes cluster from a remote server.
+        kops export kubecfg --admin $NAME
+
+
+        #Validate your cluster
+        while true
+        do
+                echo "Validating..."
+                kops validate cluster
+                if [ $? -eq 0 ]
+                then
+                        break
+                else
+                        continue
+                fi
+        done
 
 
 #Checking if kops is installed
-if [ $? -ne 0 ]
+elif [ $? -ne 0 ]
 then
         # Creating KOPS user & switching to KOPS User
         sudo adduser kops
@@ -48,6 +74,9 @@ then
         sudo wget https://github.com/kubernetes/kops/releases/download/v1.22.0/kops-linux-amd64
         sudo chmod +x kops-linux-amd64
         sudo mv kops-linux-amd64 /usr/local/bin/kops
+
+        # Installing kubectl
+        sudo snap install kubectl --classic
 
         #Checking if aws cli is installed
         `aws`
@@ -125,19 +154,19 @@ then
         sleep 3
 
         # Create KOPS cluster
-        kops create cluster --zones $REGION --networking $NETWORK --master-size $MASTER_SIZE --master-count $MASTER_COUNT --node-size $WORKER_COUNT --node-count $WORKER_COUNT --cloud $PROVIDER $NAME
-
-        #kops create cluster --zones us-east-2a --networking weave --master-size t2.medium --master-count 1 --node-size t2.medium --node-count 1  vistein-1.k8s.local
+        kops create cluster --zones $REGION --networking $NETWORK --master-size $MASTER_SIZE --master-count $MASTER_COUNT --node-size $WORKER_SIZE --node-count $WORKER_COUNT --cloud $PROVIDER $NAME
 
         # copy the sshkey into your cluster to be able to access your kubernetes node from the kops server
         kops create secret --name $NAME sshpublickey admin -i ~/.ssh/id_rsa.pub
-
+        
+        
         #Initialise your kops kubernetes cluser
         kops update cluster $NAME --yes
 
 
         #Export the kubeconfig file to manage your kubernetes cluster from a remote server.
         kops export kubecfg --admin $NAME
+
 
         #Validate your cluster
         
