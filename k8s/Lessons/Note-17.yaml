@@ -1,0 +1,186 @@
+Taints
+====================
+Taint is a property of node that allows you to repel a set of pods unless those pods explicitly
+tolerates the said taint.
+
+-> Taint has three parts. A key, a value and an effect.
+ex:
+  Taint Node => kubectl taint nodes <nodeName> <key>=<value>:<effect>
+  Untaint Node => kubectl taint nodes <nodeName> <key>=<value>:<effect>-
+
+effects
+-> NoSchedule - Doesn't schedule a pod without matching tolerations
+
+-> PreferNoSchedule - Prefers that the pod without matching toleration be not
+    scheduled on the node. It is a softer version of NoSchedule effect.
+
+-> NoExecute - Evicts the pods that don't have matching tolerations.
+
+
+Tolerations
+====================
+Toleration is simply a way to overcome a taint
+
+Toleration generally has four parts. A key, a value, an operator and an effect. Operator, if not specified, defaults to Equal
+
+ex: If we taint a node using kubectl taint node <nodeName> <key>:<value>:<effect>
+    to run a workload on that node we have to tolerate the taint on the Pod.spec
+Steps:
+
+Pod.spec:
+  tolerations:
+  - key: node
+    operator: exists/equals
+    value: HatesPod
+    effect: NoSchedule
+
+
+Use cases
+============
+-> Taints can be used to group together a set of Nodes that only run a certain set of workload, like network pods or pods with special resource requirement.
+-> Taints can also be used to evict a large set of pods from a node using taint with NoExecute effect.
+
+
+Node Maintainance/ Cluster Maintainance (How to Prepare a Kubernetes Node for Maintenance)
+==========================================================================================
+Kubernetes cordons and drains are two mechanisms you can use to safely prepare for Node downtime.
+They allow workloads running on a target Node to be rescheduled onto other ones.
+You can then shutdown the Node or remove it from your cluster without impacting service availability.
+
+Applying a Node Cordon:
+Cordoning a Node marks it as unavailable to the Kubernetes scheduler.
+The Node will be ineligible to host any new Pods subsequently added to your cluster.
+
+command: kubectl cordon node-1
+
+Draining a node:
+The next step is to drain remaining Pods out of the Node. This procedure will evict the Pods so they’re rescheduled onto other Nodes in your cluster.
+Pods are allowed to gracefully terminate before they’re forcefully removed from the target Node.
+
+command: kubectl drain node-1
+         kubectl drain node-1 --grace-period 0 (Ignoring Pod Grace Periods) 
+         kubectl drain node-1 --force (forcefully remove pods which were not deployed using controllers)
+         kubectl drain node-1 --ignore-daemonsets (Ignore DaemonSets running on the node)
+
+Bringing Nodes Back Up:
+Once you’ve completed your maintenance, you can power the Node back up to reconnect it to your cluster.
+You must then remove the cordon you created to mark the Node as schedulable again
+
+command: kubectl uncordon node-1
+
+
+
+ResourceQuota (namespaced=true)
+=============================== 
+A resource quota, defined by a ResourceQuota object, provides constraints that limit aggregate resource consumption per namespace.
+Resource quotas work like this:
+Different teams work in different namespaces. (Dev, QA)
+-> The administrator creates one ResourceQuota for each namespace
+
+-> Users create resources (pods, services, etc.) in the namespace,
+   and the quota system tracks usage to ensure it does not exceed hard resource limits defined in a ResourceQuota.
+
+-> If creating or updating a resource violates a quota constraint, the request will fail with HTTP status code
+   403 FORBIDDEN with a message explaining the constraint that would have been violated.
+
+-> If quota is enabled in a namespace for compute resources like cpu and memory,
+   users must specify requests or limits for those values; otherwise, the quota system may reject pod creation. 
+
+
+Compute Resource Quota
+=======================
+limits.cpu	-> Across all pods in a non-terminal state, the sum of CPU limits cannot exceed this value.
+
+limits.memory	-> Across all pods in a non-terminal state, the sum of memory limits cannot exceed this value.
+
+requests.cpu -> Across all pods in a non-terminal state, the sum of CPU requests cannot exceed this value.
+
+requests.memory	-> Across all pods in a non-terminal state, the sum of memory requests cannot exceed this value.
+
+hugepages-<size> -> Across all pods in a non-terminal state, the number of huge page requests of the specified size cannot exceed this value.
+
+
+Storage Resource Quota
+======================
+requests.storage	-> Across all persistent volume claims, the sum of storage requests cannot exceed this value.
+
+persistentvolumeclaims	-> The total number of PersistentVolumeClaims that can exist in the namespace.
+
+<storage-class-name>.storageclass.storage.k8s.io/requests.storage	-> Across all persistent volume claims associated with the <storage-class-name>, the sum of storage requests cannot exceed this value.
+
+<storage-class-name>.storageclass.storage.k8s.io/persistentvolumeclaims -> 	Across all persistent volume claims associated with the storage-class-name, the total number of persistent volume claims that can exist in the namespace.
+
+Object Count Quota
+==================
+format:
+count/<resource>.<group> -> for resources from non-core groups
+count/<resource> -> for resources from the core group
+
+count/persistentvolumeclaims
+count/services
+count/secrets
+count/configmaps
+count/replicationcontrollers
+count/deployments.apps
+count/replicasets.apps
+count/statefulsets.apps
+count/jobs.batch
+count/cronjobs.batch
+
+
+Manifest file
+==============
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resourcequotesdev
+  namespace: dev
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 1Gi
+    limits.cpu: "2"
+    limits.memory: 2Gi
+    pods: 3
+    count/deployment.apps: 2
+     
+
+
+LimitRange (namespaced=true)
+==============================
+A LimitRange is a policy to constrain the resource allocations (limits and requests) that you can specify for each
+applicable object kind (such as Pod or PersistentVolumeClaim) in a namespace.
+
+A LimitRange provides constraints that can ->
+-> Enforce minimum and maximum compute resources usage per Pod or Container in a namespace.
+-> Enforce minimum and maximum storage request per PersistentVolumeClaim in a namespace.
+-> Enforce a ratio between request and limit for a resource in a namespace.
+-> Set default request/limit for compute resources in a namespace and automatically inject them to Containers at runtime.
+
+Manifest file
+==============
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: dev-ns-limit-range
+  namespace: dev
+spec:
+  limits:
+  - default: # this section defines default limits
+      cpu: 500m
+      memory: 512Mi
+    defaultRequest: # this section defines default requests
+      cpu: 500m
+      memory: 512Mi
+    max:  # max and min define the limit range
+      cpu: 1
+      memory: 650Mi
+    min:
+      cpu: 200m
+      memory: 300Mi
+    type: Container
+
+
+
+NetWorkPolicies in K8S
+======================= 

@@ -138,21 +138,6 @@ affinity:
     topologyKey: "kubernetes.io/hostname"
 
 
-Taints
-====================
-Taint is a property of node that allows you to repel a set of pods unless those pods explicitly
-tolerates the said taint.
-
--> Taint has three parts. A key, a value and an effect.
-ex:
-  Taint Node => kubectl taint nodes <nodeName> <key>=<value>:<effect>
-  Untaint Node => kubectl taint nodes <nodeName> <key>=<value>:<effect>-
-
-effects
--> NoSchedule - Doesn't schedule a pod without matching tolerations
--> PreferNoSchedule - Prefers that the pod without matching toleration be not
-   scheduled on the node. It is a softer version of NoSchedule effect.
--> NoExecute - Evicts the pods that don't have matching tolerations.
 
 
 
