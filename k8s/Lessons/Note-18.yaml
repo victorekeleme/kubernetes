@@ -1,0 +1,28 @@
+Prerequisites
+==================
+-> AWS Account With Admin Privileges.
+-> Instance to manage/access EKS cluster using kubectl
+-> AWS CLI access to use kubectl utility.
+
+
+Step By Step Procedure Using AWS Console
+========================================= 
+-> Create IAM Role For EKS Cluster.
+   -> EKS-Cluster
+
+-> Create Dedicated VPC For EKS Cluster. Using CloudFormation.
+   link: https://amazon eks.s3.us west2.amazonaws.com/cloudformation/2020 08 12/amazon eks vpc private subnets.yaml
+
+-> Create EKS Cluster.
+
+-> Create IAM Role For EKS Worker Nodes.
+    -> AmazonEKSWorkerNodePolicy
+    -> AmazonEKS_CNI_Policy
+    -> AmazonEC2ContainerRegistryReadOnly
+
+-> Create Worker Nodes.
+
+-> Create An Instance (If Not Exists) Install AWS CLI , IAM Authenticator And kubectl . 
+  Configure AWS CLI using Root or IAM User Access Key & Secret Key. Or Attach IAM With Required Policies.
+  
+  command: aws eks update kubeconfig name < ClusterName > region < RegionName >

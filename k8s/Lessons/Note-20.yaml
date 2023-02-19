@@ -1,0 +1,102 @@
+Ingress
+==============
+Kubernetes Ingress -> 
+Kubernetes Ingress is a native kubernetes resource where you can have rules to route traffic from an external source to service
+endpoints residing inside the cluster. It requires an ingress controller for routing the rules specified in the ingress object.
+
+Kubernetes Ingress Controller
+
+Ingress controller is typically a proxy service deployed in the cluster. It is nothing but a kubernetes deployment exposed to a service. 
+The ingress controller evaluates the request using the defined rules (Host based or Path based) comming from the loadbalancer and routes it accordingly to the right internal service
+
+
+Following are the ingress controllers available for kubernetes.
+Nginx Ingress Controller
+Traefik
+HAproxy
+Contour
+GKE
+
+Create Secret for tls certificate
+
+imperative:
+  command: kubectl create secret tls devopsvault-ingress-tls --namespace default --key devopsvault.key --cert devopsvault.crt 
+
+declarative:
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: devopsvault-ingress-tls
+  type: kubernetes.io/tls
+  data:
+    tls.key: base64Encoded(devopsvault.key)
+    tls.cert: base64Encoded(devopsvault.crt)
+
+
+Host Based Routing
+====================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  labels:
+    name: nginx-ingress
+spec:
+  tls:
+    - hosts:
+        - devopsvault.io
+      secretName: devopsvault-ingress-tls
+  rules:
+  - host: devopsvault.io
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: <Service>
+            port: 
+              number: <Port>
+  - host: devopsalchemy.io
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: <Service>
+            port: 
+              number: <Port>
+
+
+
+Path Based Routing
+====================
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  labels:
+    name: nginx-ingress
+spec:
+  rules:
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/about-us"
+        backend:
+          service:
+            name: <Service>
+            port: 
+              number: <Port>
+      paths:
+      - pathType: Prefix
+        path: "/categories"
+        backend:
+          service:
+            name: <Service>
+            port: 
+              number: <Port>
+
+

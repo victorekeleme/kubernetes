@@ -1,1 +1,24 @@
+Projects
+==============
 Build & Deploy Maven-web-app in K8s Using Jenkins Pipelines
+
+
+Practice
+liveness probe
+readiness probe
+
+node affinity
+taints
+
+maintenance
+cordon
+drain
+uncordon
+
+network policy
+
+Cluster autoscaler and HPA
+
+Ingress and ingress controller 
+ 
+AWS Route 53
