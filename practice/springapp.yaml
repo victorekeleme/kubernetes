@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: springapp-deploy
+  namespace: dev
   labels:
     app: springapp
 spec:
@@ -25,6 +26,22 @@ spec:
             memory: "250Mi"
         ports:
         - containerPort: 8080
+        env:
+        - name: MONGO_DB_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-config
+              key: USERNAME
+        - name: MONGO_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: PASSWORD
+        - name: MONGO_DB_HOSTNAME
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-config
+              key: DATABASE_URL
 
 ---
 apiVersion: v1

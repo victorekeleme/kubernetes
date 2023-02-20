@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongod
-  namespace: backend
+  namespace: dev
   labels:
     app: mongodb
 spec:
@@ -62,7 +62,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mongodb-service
-  namespace: backend
+  namespace: dev
 spec:
   selector:
     app: mongodb
