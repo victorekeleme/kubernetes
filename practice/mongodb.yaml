@@ -1,58 +1,38 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: mongod
+  name: mongodb
   namespace: dev
 spec:
-  serviceName: mongodb-svc
-  replicas: 3
   selector:
     matchLabels:
       app: mongodb
   template:
     metadata:
-      name: mongodb-pod
       labels:
         app: mongodb
     spec:
-      terminationGracePeriodSeconds: 10
       containers:
-        - name: mongodb-container
-          image: mongo
-          ports:
-            - containerPort: 27017
-          env:
-            - name: MONGO_INITDB_ROOT_USERNAME
-              valueFrom:
-                configMapKeyRef:
-                  name: mongodb-config
-                  key: USERNAME
-            - name: MONGO_INITDB_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-secret
-                  key: PASSWORD
-          resources:
-            requests:
-              cpu: 200m
-              memory: 256Mi
-            limits:
-              cpu: 500m
-              memory: 500Mi
-          volumeMounts:
-          - name: mongodb-pvc
-            mountPath: "/data/db"
-
-  volumeClaimTemplates:       
-  - metadata:
-      name: mongodb-pvc
-    spec:
-      resources:
-        requests:
-          storage: 2Gi
-      accessModes: [ ReadWriteOnce
+      - name: mongodb
+        image: mongo
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-config
+              key: USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: PASSWORD
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -62,6 +42,6 @@ spec:
   selector:
     app: mongodb
   ports:
-  - name: http
-    port: 27017
+  - port: 27017
     targetPort: 27017
+    protocol: TCP

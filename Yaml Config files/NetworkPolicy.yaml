@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: dev
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  -  Egress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: springapp
+      ports:
+        - port: 27017
+          protocol: TCP
+  egress:
+    - to:
+      - ipBlock:
+          cidr: 172.0.0.1/16
+          except:
+            - "10.0.0.1/16"
+      ports:
+        - port: 3390
+          protocol: TCP

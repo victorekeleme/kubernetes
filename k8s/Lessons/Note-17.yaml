@@ -184,3 +184,51 @@ spec:
 
 NetWorkPolicies in K8S
 ======================= 
+Controlling and filtering traffic when containerizing a workload within Kubernetes Pods is just as crucial as a firewall in a more traditional network setup.
+The difference is that, in this scenario, those capabilities are provided by the Kubernetes NetworkPolicy API.
+
+NetworkPolicy is compased of the following
+podSelector.matchLabels -> this specifys the pods we are working with
+policyTypes
+  ->Ingress (Incoming)
+  ->Egress (Outgoing)
+
+sources of traffic:
+  ipBlock.(cidr & except)
+  namespaceSelector.matchLabels
+  podSelector.matchLabels
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: 172.17.0.0/16
+            except:
+              - 172.17.1.0/24
+        - namespaceSelector:
+            matchLabels:
+              project: myproject
+        - podSelector:
+            matchLabels:
+              role: frontend
+      ports:
+        - protocol: TCP
+          port: 6379
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/24
+      ports:
+        - protocol: TCP
+          port: 5978

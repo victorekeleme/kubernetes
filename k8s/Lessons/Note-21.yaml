@@ -1,4 +1,121 @@
 Role Based Access Control (RBAC)
 =================================
+RBAC is a way to define which users can do what within a Kubernetes cluster.
 
- 
+For example: you may want a user, say Michale from development, to have access only to some resources that are in the development namespace and nothing else.
+To achieve this type of role based access, we use the concept of Authentication and Authorization in Kubernetes.
+
+Broadly, there are three kinds of users that need access to a Kubernetes cluster:
+1. Developers/Admins:
+  Users that are responsible to do administrative or developmental tasks on the cluster.
+  This includes operations like upgrading the cluster or creating the resources/workloads on the cluster.
+2. End Users:
+   Users that access the applications deployed on our Kubernetes cluster.
+   Access restrictions for these users are managed by the applications themselves.
+   For example: a web application running on Kubernetes cluster, will have its own security mechanism in place, to prevent unauthorized access.
+3.Applications/Bots:
+  There is a possibility that other applications need access to Kubernetes cluster,
+  typically to talk to resources or workloads inside the cluster. Kubernetes facilitates this by using Service Accounts.
+
+RBAC in Kubernetes is based on three key concepts:
+1. Verbs: This is a set of operations that can be executed on resources (Create, Read, Update, Delete)
+2. API Resources: These are the objects available on the clusters (Pods, Nodes, PV, PVC, Deployment, StatefulSet).
+2. Subjects: These are the objects (Users, Groups, Processes(Service Account)) allowed access to the API, based on Verbs and Resources.
+
+
+RBAC Role (Namespaced=true)
+======================
+A Role example named readonly-role which allows access to the dev with get, watch, and list operations
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: readonly-role
+  namespace: dev
+rules:
+  - apiGroups: [""] # set core API group
+    resources: ["pods"] # which resources are allowed for access
+    verbs: ["get", "list", "watch", "create"] # which actions are allowed over the resources above
+  - apiGroups: ["apps"] 
+    resources: ["deployment", "replicaset"]
+    verbs: ["get", "list", "watch", "create"]
+
+
+RBAC RoleBingding (Namespaced=true)
+======================================
+To “map” those permissions to users we are using Kubernetes RoleBingding, which sets readonly-role in the dev for the vistein-1.k8s.local user
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: user-readonly-rolebinding
+  namespace: dev
+subjects:
+  - kind: User # an object type which will have access, in our case this is a regular user
+    name: vistein-1.k8s.local # a user’s name to set the permissions 
+    apiGroup: rbac.authorization.k8s.io 
+  roleRef:
+  - kind: Role # what exactly will be attached to the user, in this case, it is the Role object type
+    name: readonly-role # and the role name as it was set in the name: readonly-role in the example above
+    apiGroup: rbac.authorization.k8s.io 
+
+Role vs ClusterRole
+===================
+The difference is that Role is used inside of a namespace, while ClusterRole is cluster-wide permission without a namespace boundaries
+
+for example: 
+▪ allow access to a cluster nodes 
+▪ resources in all namespaces 
+▪ allow access to endpoints like /healthz
+
+
+
+RBAC ClusterRole (Namespaced=fasle)
+==============================
+
+A ClusterRole looks similar to a Role with the only difference that we have to set its kind as ClusterRole
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: CLusterRole
+metadata:
+  name: readonly-role
+  namespace: dev # irrespective of the namespace defined the effect is on a cluster level
+rules:
+  - apiGroups: [""] # set core API group
+    resources: ["pods"] # which resources are allowed for access
+    verbs: ["get", "list", "watch", "create"] # which actions are allowed over the resources above
+  - apiGroups: ["apps"] 
+    resources: ["deployment", "replicaset"]
+    verbs: ["get", "list", "watch", "create"]
+
+ClusterRoleBinding (Namespaced=fasle)
+=======================================
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: user-readonly-rolebinding
+  namespace: dev # irrespective of the namespace defined the effect is on a cluster level
+subjects:
+  - kind: User # an object type which will have access, in our case this is a regular user
+    name: vistein-1.k8s.local # a user’s name to set the permissions 
+    apiGroup: rbac.authorization.k8s.io 
+  roleRef:
+  - kind: Role # what exactly will be attached to the user, in this case, it is the Role object type
+    name: readonly-role # and the role name as it was set in the name: readonly-role in the example above
+    apiGroup: rbac.authorization.k8s.io 
+
+
+Note: 
+-> Once a RoleBinding/ClusterBinding is created, you'll not be able to edit its roleRef value - instead,
+   you'll have to delete a Binding and recreate and again
+-> Kubernetes uses RBAC to control different access levels to its resources depending on the rules set in Roles or ClusterRoles.
+-> Roles and ClusterRoles use API namespaces, verbs and resources to secure access.
+-> Roles and ClusterRoles are ineffective unless they are linked to a subject (User, Group, serviceAccount...etc) through RoleBinding or ClusterRoleBinding.
+-> Roles work within the constraints of a namespace. It would default to the “default” namespace if none was specified.
+-> ClusterRoles are not bound to a specific namespace as they apply to the cluster as a whole.
+
+
+
+
+
