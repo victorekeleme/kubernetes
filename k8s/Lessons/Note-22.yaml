@@ -1,3 +1,106 @@
 Helm
 ========= 
 
+Helm is the package manager for Kubernetes.
+It allows you to install/deploy/remove/update applications on your Kubernetes cluster in a similar manner to yum/apt for Linux distributions.
+Helm lets you fetch, deploy and manage the lifecycle of applications, both 3rd party products and your own.
+
+Helm introduces several familiar concepts such as:
+-> Charts which are the Helm packages (like deb/rpm)
+-> Helm repositories which hold charts (similar to package repos)
+-> A CLI with install/upgrade/remove commands.
+
+Why use Helm?
+==============
+Kubernetes can be difficult to manage with all the objects you need to maintain (ConfigMaps/Secrets, pods, services, deployments, etc.).
+Helm greatly simplifies the process of creating, managing, and deploying applications using Helm Charts.
+
+Helm also maintains a versioned history of every chart(Application) installation.
+-> If something goes wrong, you can simply call “helm rollback.”
+-> Similarly, if you need to upgrade a chart, you can simply call “helm upgrade.”
+
+What is a Helm Chart?
+-> A chart is basically just a collection of manifest files organized in a specific directory structure that describe a related Kubernetes resource.
+
+Two main components to a chart
+-> templates 
+-> values
+
+Note: templates and values go through a template rendering engine, producing a manifest that is easily digestible by Kubernetes.
+
+circleapp
+├── Chart.yaml # Metadata information about chart.
+├── charts # define dependent helm chart names
+├── templates # Will maintain k8’s manifest files which is required for our application
+│ ├── deployment.yaml
+│ ├── hpa.yaml
+│ ├── ingress.yaml
+│ ├── service.yaml
+│ ├── serviceaccount.yaml
+│ 
+└── values.yaml # Will define default values which will be referred in templates.
+
+Helm concepts
+==============
+
+Repository 
+-> Repositories are where helm charts are held and maintained.
+
+Add helm repo
+command: helm repo add <repoName> <repoUrl>
+ex: helm repo add nginx-stable https://helm.nginx.com/stable
+
+Update repo
+command: helm repo update
+
+Install a chart in repo
+command: helm install <releaseName> <repoName>/<chartName>
+ex: helm install nginxingress nginx-stable/nginx-ingress
+
+
+Release
+-> Release is a mechanism helm uses to track installed applications on kubernetes.
+Note: when an application is installed by Helm, a release is being created 
+
+Helm 3 Architecture
+====================
+In helm 3 there is no tiller component. Helm client directly interacts with the kubernetes API for the helm chart deployment.
+
+Helm 2 Architecture
+====================
+In helm 2 there is a helm component called tiller which will be deployed in the kubernetes kube-system namespace.
+Tiller components is removed in helm 3 versions due to security risks.
+
+Installing/Using Helm 3
+Note: The workstation you are running should have the kubectl context set to the cluster you want to manage with Helm.
+      Helm works inside Kubernetes and uses by default the kubeconfig file (“~/.kube/config”).
+      If you want to use another file set environment variable $KUBECONFIG
+
+Basic commands.
+=============== 
+
+helm install <releaseName> <repoName>/<chartName>
+ex: helm install nginxingress nginx-stable/nginx-ingress
+
+OR
+
+helm install <repoName>/<chartName> --generate-name (generates a random name for release)
+helm install <releaseName> <repoName>/<chartName> --dry-run (runs install command on dry run)
+
+If you want to upgrade your chart, use the following command and choose the release you want:
+helm upgrade <releaseName> <repoName>/<chartName>
+
+helm upgrade --install <releaseName> <repoName>/<chartName> (if you want to run an install before if a release by this name doesn't already exist.)
+
+helm rollback <releaseName> <revisionNumber> (you can do a rollback. If you do not specify the revision, it will roll back to the previous version.)
+
+To retrieve a package from a package repository, and download it locally:
+helm pull <chart>
+
+Search hub:
+command: helm search hub 
+Search Repo:
+command: helm search repo 
+
+
+
