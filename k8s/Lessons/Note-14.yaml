@@ -1,15 +1,11 @@
-Liveness Probe & Readiness Probe
-=================================
+Liveness Probe, Readiness Probe & Startup Probe
+===============================================
 Liveness and Readiness probes are used to control the health of an application running inside a Pod’s container.
 
 Liveness Probe ->
 Liveness probe checks the container health as we tell it do, and if for some reason the liveness probe fails, it restarts the container.
 Example ->
 -> Suppose that a Pod is running our application inside a container, but due to some reason let’s say memory leak, cpu usage, application deadlock etc the application is not responding to our requests, and stuck in error state.
-
-Readiness Probe -> 
--> This type of probe is used to detect if a container is ready to accept traffic. You can use this probe to manage which pods are used as backends for load balancing services. If a pod is not ready, it can then be removed from the list of load balancers.
-
 
 livenessProbe:
   exec:
@@ -19,6 +15,10 @@ livenessProbe:
   initialDelaySeconds: 30 # time delay to before liveness checks is conducted
   PeriodSeconds: 5 # periodic health check interval
 
+Readiness Probe -> 
+-> This type of probe is used to detect if a container is ready to accept traffic. You can use this probe to manage which pods are used as backends for load balancing services.
+If a pod is not ready, it can then be removed from the list of load balancers.
+
 readynessProbe:
   exec:
     commad:
@@ -26,6 +26,21 @@ readynessProbe:
     - /tmp/healthy
   initialDelaySeconds: 30 # time delay to before readyness checks is conducted
   PeriodSeconds: 5 # periodic health check interval
+
+Startup Probe ->
+Sometimes, you have to deal with legacy applications that might require an additional startup time on their first initialization.
+In such cases, it can be tricky to set up liveness probe parameters without compromising the fast response to deadlocks that motivated such a probe.
+The trick is to set up a startup probe with the same command, HTTP or TCP check, with a failureThreshold * periodSeconds long enough to cover the worse case startup time.
+
+startupProbe:
+httpGet:
+  path: /healthz
+  port: liveness-port
+failureThreshold: 30
+periodSeconds: 10
+
+
+USAGE:
 
 HTTP Get call(HTTP health check)
 
@@ -64,3 +79,5 @@ readynessProbe:
     port: 8080
   initialDelaySeconds: 5
   PeriodSeconds: 10
+
+
