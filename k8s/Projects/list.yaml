@@ -4,8 +4,7 @@ Build & Deploy Maven-web-app in K8s Using Jenkins Pipelines
 
 
 Practice
-liveness probe
-readiness probe
+
 
 node affinity
 taints
@@ -17,11 +16,14 @@ uncordon
 
 network policy
 
-Cluster autoscaler and HPA
-
+Helm (project)
+==============
+Cluster autoscaler, HPA, metric-server
 Ingress and ingress controller 
- 
 AWS Route 53
-
-
 RBAC
+liveness probe
+readiness probe
+network policy
+Mongo-stack (mongo-ui-deployment, mongodb-stateful, configmap, secret)
+

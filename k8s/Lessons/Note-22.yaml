@@ -98,9 +98,54 @@ To retrieve a package from a package repository, and download it locally:
 helm pull <chart>
 
 Search hub:
-command: helm search hub 
+-> helm search hub 
 Search Repo:
-command: helm search repo 
+-> helm search repo 
+-> helm search repo <repoName>
+
+If you want to uninstall a release:
+-> helm uninstall <releaseName>
 
 
+Repository commands -> 
 
+-> helm repo add <name> <repoUrl> (Add chart repository)
+-> helm repo list | ls (list chart repositories)
+-> helm repo remove | rm <name> (remove a chart repository)
+-> helm repo update
+-> helm pull <name> --untar (Get the latest information about charts from the respective chart repositories)
+
+
+Monitoring commands -> 
+
+helm status <releaseName> (shows you the status of your release)
+such as -> 
+- Last deployment time
+- Namespace
+- State of the release
+- list of resources that this release consists of, sorted by kind
+- Details on last test suite run, if applicable
+- Additional notes provided by the chart
+
+helm list | helm ls (List all applications that have been installed in the cluster using helm)
+
+helm history <releaseName> (See all the historical revisions for a given release)
+
+
+Create your own chart
+
+helm create <nameOfChat> (Creates a chart directory with the common files and directories used in a chart)
+ex: helm create javawebapp
+
+javawebapp/
+├── .helmignore # Contains patterns to ignore when packaging Helm charts.
+├── Chart.yaml # Information about your chart
+├── values.yaml # The default values for your templates
+├── charts/ # Charts that this chart depends on
+├── templates/ # The template files
+└── tests/ # The test files
+
+
+helm lint javawebapp (This command takes a path to a chart and runs a series of tests to verify that the chart is well-formed)
+
+helm package <chartName> (packages a chart into a versioned chart archive file.)
