@@ -3,7 +3,7 @@ ReplicaSet (RS)
 
 ReplicaSet is next generation(Advance version) of Replication Controller.
 ReplicaSet also manages the pod lifecycle.
-It will create and manage pods and we can sclae in or scale out the pod replicas
+It will create and manage pods and we can scale-in or scale-out the pod replicas
 
 Note-> Only difference btw ReplicaController and ReplicaSet is in Selector Support
 -> RC Supports only Equality Based Selector
@@ -12,6 +12,14 @@ Note-> Only difference btw ReplicaController and ReplicaSet is in Selector Suppo
 -> RS Supports both Equality and Set(Expression) Based Selector.
   -> key in ('value1',value2)
   -> key not in ('value1, 'value2')
+  selector:
+    matchExpressions:
+      - key: pod
+        operator: In/Not
+        values:
+        - value1
+        - value2 
+
 -> Selectors are not mandatory in RC & In Rs Selectors are mandatory
 
 
@@ -27,10 +35,10 @@ Note ->
 Taint ->
 Enable us to exclude one/more nodes from Pod Scheduling
 
-command-> kubectl taint node master node-role.kubernetes.io/master:NoSchedule-
+command-> kubectl taint node master node-role.kubernetes.io/master:NoSchedule
 
 Toleration ->
-Enables us schedule a pod on any node
+Enables us schedule a pod on any node which is tainted
 Eg:
     tolerations:
     - operator: Exists

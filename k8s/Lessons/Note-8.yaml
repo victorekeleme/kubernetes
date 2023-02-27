@@ -1,8 +1,8 @@
 Deployment
 ============
-This is the recommended way to deploy Pod or RS, simply because of the advance features it comes with
+This is the recommended way to deploy Pod or RS, simply because of the advance features it comes with.
 such as:
--> Deploy RS
+-> Deploy ReplicaSet
 -> Updates pods (PodTemplateSpec)
 -> Rollback to older Deployment
 -> Scale Deployment up or down
@@ -21,7 +21,7 @@ Imperative commands
 
 Deployment Strategies
 =======================
--> Rolling/ Rolling update deployment
+-> Rolling/Rolling update deployment (default)
     -> The rolling deployment is the standard default deployment to kubernetes.
     -> it works by slowly, one by one, replacing pods of the previous version of your application with pods of the new version without any cluster downtime
   Example:
@@ -34,7 +34,7 @@ Deployment Strategies
       minReadySeconds: 30 # Minimum time allowed btw each pods creation(new version) and termination(old version) during an update (helps the pods to initialize properly)
 
 -> Recreate
-    -> In recreate strategy, all the old pods are killed all at one and get replaced all at once witrh the new ones
+    -> In recreate strategy, all the old pods are killed all at one and get replaced all at once with the new ones
     spec:
       strategy:
         type: Recreate

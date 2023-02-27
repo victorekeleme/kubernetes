@@ -1,9 +1,14 @@
 Service (Communication)
 =======================
+Aservice is responsible for making our Pods discoverable inside the network or exposing them to the internet.
+A Service identifies Pods by its LabelSelector.
+
 Two pods can communicate with each other from different namespace using FQDN
 
 Fully Qualified Domain Name -> FQDN
-<serviceName>.<namespaceName>.svc.cluster.local
+<serviceName>.<namespaceName>.svc.cluster.local OR
+<hostname/podname><serviceName>.<namespaceName>.svc.cluster.local 
+
 
 testsvc.default.svc.cluster.local
 
@@ -11,7 +16,7 @@ Cluster Capacity -> Resources(CPU, Memory)
 We use resource requests and limits for managing out cluster in the pod level
 
 
-Pod Lifecycle
+Pod Lifecycle (pod->apiserver->etcd->scheduler->kubelet->containerD)
 ==============
 -> Pod makes request to API server
 -> API server stores the Information about the Pod in the ETCD
@@ -25,11 +30,13 @@ Pod Status
 ==============
 Running ->
   -> No issues
+  -> Or it's checking readiness of the pod
+
 
 Pending -> 
   -> It's pending for some reason
   -> It's not able to run due to insufficent Resources
-  -> There could be other reasons.
+  -> There could be other reasons (like taints, cordoned nodes, affinity)
   -> To troubleshoot we use = kubectl describe pod <podName>
 
 CrashLoopBackOff ->
@@ -40,7 +47,7 @@ CrashLoopBackOff ->
     -> kubectl logs <podName> -c <containerName>
 
 ImagePullBackOff/ErrorImagePull ->
-  -> Not able to pull the image due to run registry details
+  -> Not able to pull the image due to wrong registry details
   -> Not able to pull the image due to authentication issue
 
 CreateContainerConfigError ->
@@ -52,7 +59,7 @@ Pod Concepts
 -> Use Controllers like ReplicationController, ReplicaSet, DaemonSet, Deployment, StatefulSet to keep the pod alive
 
 Static Pod
--> The main use for static Pods is to run a self-hosted control-plane- in other words, using the kubelet to supervise the individual control plane components.
+-> The main use for static Pods is to run a self-hosted control-plane in other words, using the kubelet to supervise the individual control plane components.
 -> Static Pods are managed directly by the kubelet and API server does not have any control over these pods.
 -> The kubelet is responsible to watch each static Pod and restart it if it crashes.
 -> There is no health check for static pods
@@ -62,7 +69,7 @@ Example -> kubectl get pod -o wide -n kube-system
 -> kube-controller-manager
 -> kube-scheduler
 
-Note: Create static pods in /etc/kubernetes/manifest/
+Note: Static pods are created in /etc/kubernetes/manifest/
 
 Kubernetes Labels and Selectors
 ===============================

@@ -24,6 +24,10 @@ spec:
           image: mongo
           ports:
           - containerPort: 27017
+          resources:
+            requests:
+              cpu: 400m
+              memory: 500Mi
           env:
           - name: MONGO_INITDB_ROOT_USERNAME
             valueFrom:
@@ -49,26 +53,26 @@ metadata:
   name: mongo-pvc
   namespace: dev
 spec:
+  storageClassName: "gp2"
   resources:
     requests:
       storage: 2Gi
   accessModes:
-  - ReadWriteMany
+  - ReadOnlyMany
 
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mongo-pv
-spec:
-  pesistentVolumeReclaimPolicy: # Retain Delete, Recycle 
-  capacity:
-    storage: 2Gi
-  accessModes:
-  - ReadWriteMany
-  nfs:
-    server: 10.100.0.136
-    path: / 
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: mongo-pv
+# spec:
+#   pesistentVolumeReclaimPolicy: # Retain Delete, Recycle 
+#   capacity:
+#     storage: 2Gi
+#   accessModes:
+#   - ReadWriteMany
+#   nfs:
+#     server: 10.100.0.136
+#     path: / 
 ---
 
 apiVersion: v1
