@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "mongodb-stack.fullname" }}
+  namespace: {{ .Values.namespace.env | default .Values.namespace.defaultEnv }}
+  labels:
+    {{- include "mongodb-stack.labels" | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount.mongodb }}
+  selector:
+    matchLabels:
+      {{- include "mongodb-stack.selectorLabels" . | nindent 6 }}
+  serviceName: {{ .Values.  }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8  }}  
+      {{- end -}}
+      labels:
+        {{- include "mongodb-stack.selectorLabels" . | nindent 8 }}
+    spec:
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      containers:
+        - name: "{{ .Chart.Name }}-db"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- with .Values.replCommand }}
+          command:
+            {{- toYaml . | nindent 12  }}
+          {{- end -}}
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+          - name: mongodb-pvc
+            mountPath: /data/db
+
+  volumeClaimTemplates:
+  - metadata:
+      name: "{{ .Release.Name }}-pvc"
+      namespace: {{ .Values.namespace.env | .Values.namespace.defaultEnv }}
+    spec:
+      accessModes: [ "{{ .Values.accessModes }}" ]
+      resources:
+        requests:
+          storage: {{ .Values.storage }}
