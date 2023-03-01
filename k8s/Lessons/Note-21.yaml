@@ -52,7 +52,7 @@ metadata:
   namespace: dev
 subjects:
   - kind: User # an object type which will have access, in our case this is a regular user
-    name: vistein-1.k8s.local # a user’s name to set the permissions 
+    name: vistein-1.k8s.local/ david # a user’s name to set the permissions 
     apiGroup: rbac.authorization.k8s.io 
   roleRef:
   - kind: Role # what exactly will be attached to the user, in this case, it is the Role object type
