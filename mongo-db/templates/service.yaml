@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mongo-db.fullname" . }}-svc
+  namespace: {{ .Values.namespace.env | default .Values.namespace.defaultEnv }}
+  labels:
+    {{- include "mongo-db.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  clusterIP: None
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: mongodbport
+      protocol: TCP
+      name: mongodbport
+  selector:
+    {{- include "mongo-db.selectorLabels" . | nindent 4 }}
