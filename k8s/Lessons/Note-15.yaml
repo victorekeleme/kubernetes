@@ -67,3 +67,6 @@ members: [
 
 # Create root username and password
 db.getSiblingDB("admin").createUser ( {user : "admin", pwd : "pass", roles: [ { role: "root", db: "admin" } ]} );
+
+FQDN
+mongodb-0.mongodb-service.dev.svc.cluster.local

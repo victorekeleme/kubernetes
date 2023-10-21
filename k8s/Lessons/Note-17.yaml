@@ -25,6 +25,7 @@ Toleration generally has four parts. A key, a value, an operator and an effect. 
 
 ex: If we taint a node using kubectl taint node <nodeName> <key>:<value>:<effect>
     to run a workload on that node we have to tolerate the taint on the Pod.spec
+
 Steps:
 
 Pod.spec:
@@ -133,7 +134,7 @@ Manifest file
 apiVersion: v1
 kind: ResourceQuota
 metadata:
-  name: resourcequotesdev
+  name: resourcequotasdev
   namespace: dev
 spec:
   hard:

@@ -6,7 +6,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: hpadeployment
+    name: nginx
   minReplicas: 2
   maxReplicas: 5
   metrics:
@@ -15,12 +15,12 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 40
+        averageUtilization: 2
     resource:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 40
+        averageUtilization: 20
 
 ---
 apiVersion: v1

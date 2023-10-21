@@ -4,23 +4,23 @@ metadata:
   name: mongo-ui
   namespace: dev
   labels:
-    app: mongo-express
+    frontend: mongo-express
 spec:
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-  minReadySeconds: 30
+  # strategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     maxSurge: 1
+  #     maxUnavailable: 1
+  # minReadySeconds: 30
   selector:
     matchLabels:
-      app: mongo-express
-  replicas: 1
+      frontend: mongo-express
+  replicas: 4
   template:
     metadata:
       name: mongo-ui
       labels:
-        app: mongo-express
+        frontend: mongo-express
     spec:
       containers:
         - name: mongo-express
@@ -58,9 +58,8 @@ metadata:
   namespace: dev
 spec:
   selector:
-    app: mongo-express
-  type: NodePort
+    frontend: mongo-express
+  type: LoadBalancer
   ports:
   - port: 80
     targetPort: 8081
-    nodePort: 31000

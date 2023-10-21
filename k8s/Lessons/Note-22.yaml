@@ -149,3 +149,11 @@ javawebapp/
 helm lint javawebapp (This command takes a path to a chart and runs a series of tests to verify that the chart is well-formed)
 
 helm package <chartName> (packages a chart into a versioned chart archive file.)
+
+
+View information about a chart
+$ helm repo add concourse https://concourse-charts.storage.googleapis.com/
+$ helm show chart concourse/concourse
+$ helm show values concourse/concourse
+
+$ helm install -f prom-values.yaml prometheus prometheus-community/prometheus --dry-run

@@ -1,0 +1,26 @@
+# {{- $root := . -}}
+# {{- range $apps := .Values.apps }}
+# {{- if ne .name "ingress" }}
+# {{- if ne .name "namespace" }}
+# ---
+# apiVersion: policy/v1
+# kind: PodDisruptionBudget
+# metadata:
+#   name: {{ .name }}-pdb
+#   namespace: {{ lower $root.Values.env }}
+# spec:
+#   minAvailable: {{ $root.Values.minAvailable }}
+#   selector:
+#     matchLabels:
+#       {{ if eq .name "ingress" }}
+#       instance: nginx-ingress
+#       name: nginx-ingress
+#       {{ else }} 
+#       app: {{ .name }}
+#       {{ end }}
+    
+# ---
+# {{- end }}
+# {{- end }}
+# {{- end }}
+      
